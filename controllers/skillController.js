@@ -1,5 +1,5 @@
 const {Sequelize} = require('sequelize');
-const db = require("../models").UserTypes;
+const db = require("../models").Skill;
 
 const getAll = async (req, res) => {
     await db
@@ -8,7 +8,7 @@ const getAll = async (req, res) => {
         if (datas.length > 0) {
           res.status(200).json(datas);
         } else {
-          res.status(404).json("No UserTypes Data.");
+          res.status(404).json("No Skill Data.");
         }
       })
       .catch((error) => {
@@ -23,7 +23,7 @@ const getById = async (req, res) => {
         if (data) {
           res.status(200).json(data);
         } else {
-          res.status(404).json("UserTypes not found");
+          res.status(404).json("Skill not found");
         }
       })
       .catch((err) => {

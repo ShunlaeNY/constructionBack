@@ -1,5 +1,5 @@
 const {Sequelize} = require('sequelize');
-const db = require("../models").Operationtype;
+const db = require("../models").Team;
 
 const getAll = async (req, res) => {
     await db
