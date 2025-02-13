@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // Define associations here
+      Team.hasMany(models.Staff,{foreignKey: 'teamId'});
     }
   }
 

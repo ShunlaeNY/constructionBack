@@ -8,6 +8,7 @@ const teamRoutes = require("./routes/team");
 const groupRoutes = require("./routes/group");
 const operationtypesRoutes = require("./routes/operationtypes");
 const skillRoutes = require("./routes/skill");
+const staffRoutes = require("./routes/staff");
 
 
 
@@ -21,6 +22,7 @@ app.use("/team",teamRoutes);
 app.use("/group",groupRoutes);
 app.use("/operationtypes",operationtypesRoutes);
 app.use("/skill",skillRoutes);
+app.use("/staff",staffRoutes);
 
 app.listen(port,() => {
     console.log("Listing on port " + port);

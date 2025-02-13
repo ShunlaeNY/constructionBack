@@ -1,0 +1,33 @@
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+module.exports = {
+  async up(queryInterface, Sequelize) {
+    // Modify the 'email' column to enforce email validation
+    await queryInterface.changeColumn('staffs', 'email', {
+      type: Sequelize.STRING,
+      allowNull: false,
+      validate: {
+        isEmail: true
+      }
+    });
+
+    // Add a unique constraint to the 'email' column
+    await queryInterface.addConstraint('staffs', {
+      fields: ['email'],
+      type: 'unique',
+      name: 'unique_email_constraint'
+    });
+  },
+
+  async down(queryInterface, Sequelize) {
+    // Remove the unique constraint first
+    await queryInterface.removeConstraint('staffs', 'unique_email_constraint');
+
+    // Revert the email column back to its previous state (modify as needed)
+    await queryInterface.changeColumn('staffs', 'email', {
+      type: Sequelize.STRING,
+      allowNull: true // Set back to nullable if originally nullable
+    });
+  }
+};
