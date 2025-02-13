@@ -1,18 +1,18 @@
 const {Sequelize} = require('sequelize');
-const db = require("../models").Staff;
-const teamDB = require('../models').Team;
-const usertypesDB = require('../models').Usertypes;
+const db = require("../models").Site;
+const businesspartnerDB = require('../models').Businesspartner;
+const staffDB = require('../models').Staff;
 
 const getAll = async (req, res) => {
     await db
       .findAll({
         include: [
             {
-              model: usertypesDB,
+              model: staffDB,
               attributes: ["name"],
             },
             {
-              model: teamDB,
+              model: businesspartnerDB,
               attributes: ["name"],
             }
           ],
@@ -21,7 +21,7 @@ const getAll = async (req, res) => {
         if (datas.length > 0) {
           res.status(200).json(datas);
         } else {
-          res.status(404).json("No Team Data.");
+          res.status(404).json("No Site Data.");
         }
       })
       .catch((error) => {
@@ -35,11 +35,11 @@ const getById = async (req, res) => {
         where: { id: req.params.id },
         include: [
             {
-              model: usertypesDB,
+              model: staffDB,
               attributes: ["name"],
             },
             {
-              model: teamDB,
+              model: businesspartnerDB,
               attributes: ["name"],
             }
           ],
@@ -48,7 +48,7 @@ const getById = async (req, res) => {
         if (data) {
           res.status(200).json(data);
         } else {
-          res.status(404).json("Team not found");
+          res.status(404).json("Site not found");
         }
       })
       .catch((err) => {
@@ -56,20 +56,20 @@ const getById = async (req, res) => {
       });
 };
 
-const getByUsertypesId = async (req, res) => {
+const getByBusinesspartnerId = async (req, res) => {
     await db
       .findAll({
-        where: { usertypesId: req.params.id },
+        where: { businesspartnerId: req.params.id },
         include: [
             {
-              model: usertypesDB,
+              model: staffDB,
               attributes: ["name"],
             },
             {
-              model: teamDB,
+              model: businesspartnerDB,
               attributes: ["name"],
             }
-          ],
+          ],  
       })
       .then((datas) => {
         if (datas.length > 0) {
@@ -81,10 +81,10 @@ const getByUsertypesId = async (req, res) => {
       .catch((err) => res.status(500).json("Error: " + err.message));
 };
 
-const getByTeamId = async (req, res) => {
+const getByStaffId = async (req, res) => {
     await db
       .findAll({
-        where: { teamId: req.params.id }
+        where: { staffId: req.params.id }
       })
       .then((datas) => {
         if (datas.length > 0) {
@@ -101,14 +101,14 @@ const addNew = async (req, res) => {
       .findOne({ where: { name: req.body.name } })
       .then((data) => {
         if (data != null) {
-          return res.status(400).json("Team already exist.");
+          return res.status(400).json("Site already exist.");
         } else {
           // console.log(req.body);
           return db.create(req.body);
         }
       })
       .then(() => {
-        res.status(201).json("Team created Successfully.");
+        res.status(201).json("Site created Successfully.");
       })
       .catch((err) => {
         return res.status(400).json(err.message);
@@ -149,4 +149,4 @@ const addNew = async (req, res) => {
       });
   };
 
-module.exports = { getAll, getById, getByUsertypesId, getByTeamId, addNew, editData, deleteData };
+module.exports = { getAll, getById, getByBusinesspartnerId, getByStaffId, addNew, editData, deleteData };

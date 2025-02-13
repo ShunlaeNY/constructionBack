@@ -1,27 +1,20 @@
 const {Sequelize} = require('sequelize');
-const db = require("../models").Staff;
-const teamDB = require('../models').Team;
-const usertypesDB = require('../models').Usertypes;
+const db = require("../models").Vehicle;
+const groupDB = require('../models').Group;
 
 const getAll = async (req, res) => {
     await db
       .findAll({
-        include: [
-            {
-              model: usertypesDB,
-              attributes: ["name"],
-            },
-            {
-              model: teamDB,
-              attributes: ["name"],
-            }
-          ],
+        include: {
+          model: groupDB,
+          attributes: ["name"],
+        },
       })
       .then((datas) => {
         if (datas.length > 0) {
           res.status(200).json(datas);
         } else {
-          res.status(404).json("No Team Data.");
+          res.status(404).json("No Vehicle Data.");
         }
       })
       .catch((error) => {
@@ -33,22 +26,16 @@ const getById = async (req, res) => {
     await db
       .findOne({
         where: { id: req.params.id },
-        include: [
-            {
-              model: usertypesDB,
-              attributes: ["name"],
-            },
-            {
-              model: teamDB,
-              attributes: ["name"],
-            }
-          ],
+        include: {
+          model: groupDB,
+          attributes: ["name"],
+        }
       })
       .then((data) => {
         if (data) {
           res.status(200).json(data);
         } else {
-          res.status(404).json("Team not found");
+          res.status(404).json("Vehicle not found");
         }
       })
       .catch((err) => {
@@ -56,41 +43,20 @@ const getById = async (req, res) => {
       });
 };
 
-const getByUsertypesId = async (req, res) => {
+const getByGroupId = async (req, res) => {
     await db
       .findAll({
-        where: { usertypesId: req.params.id },
-        include: [
-            {
-              model: usertypesDB,
-              attributes: ["name"],
-            },
-            {
-              model: teamDB,
-              attributes: ["name"],
-            }
-          ],
+        where: { groupId: req.params.id },
+        include: {
+          model: groupDB,
+          attributes: ["name"],
+        }  
       })
       .then((datas) => {
         if (datas.length > 0) {
           res.status(200).json(datas);
         } else {
-          res.status(404).json("Staffs not found in this UserType!");
-        }
-      })
-      .catch((err) => res.status(500).json("Error: " + err.message));
-};
-
-const getByTeamId = async (req, res) => {
-    await db
-      .findAll({
-        where: { teamId: req.params.id }
-      })
-      .then((datas) => {
-        if (datas.length > 0) {
-          res.status(200).json(datas);
-        } else {
-          res.status(404).json("Staffs not found in this Team!");
+          res.status(404).json("Vehicles not found in this Group!");
         }
       })
       .catch((err) => res.status(500).json("Error: " + err.message));
@@ -101,14 +67,14 @@ const addNew = async (req, res) => {
       .findOne({ where: { name: req.body.name } })
       .then((data) => {
         if (data != null) {
-          return res.status(400).json("Team already exist.");
+          return res.status(400).json("Vehicle already exist.");
         } else {
           // console.log(req.body);
           return db.create(req.body);
         }
       })
       .then(() => {
-        res.status(201).json("Team created Successfully.");
+        res.status(201).json("Vehicle created Successfully.");
       })
       .catch((err) => {
         return res.status(400).json(err.message);
@@ -149,4 +115,4 @@ const addNew = async (req, res) => {
       });
   };
 
-module.exports = { getAll, getById, getByUsertypesId, getByTeamId, addNew, editData, deleteData };
+module.exports = { getAll, getById, getByGroupId, addNew, editData, deleteData };

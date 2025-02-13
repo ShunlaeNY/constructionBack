@@ -13,11 +13,13 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.UserTypes, { foreignKey: 'usertypesId' });
       this.belongsTo(models.Team, { foreignKey: 'teamId' });
-      Staff.belongsToMany(models.Skill, {
+      this.belongsToMany(models.Skill, {
         through: 'StaffSkills', // Same join table name
         foreignKey: 'staffId',
         otherKey: 'skillId',
       });
+      this.hasMany(models.Businesspartner, { foreignKey: 'staffId' });
+      this.hasOne(models.Site, { foreignKey: 'staffId' });
       
     }
   }
