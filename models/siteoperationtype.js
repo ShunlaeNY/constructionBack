@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       this.belongsTo(models.Site, { foreignKey:'siteId' });
       this.belongsTo(models.Operationtype, { foreignKey: 'operationtypesId' });
+      this.hasOne(models.SiteOperationStaffVehicle, { foreignKey :'siteoperationtypesId' });
     }
   }
   SiteOperationtype.init({

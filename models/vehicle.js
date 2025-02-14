@@ -12,11 +12,15 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       this.belongsTo(models.Group, { foreignKey:'groupId' });
-
+      this.hasOne(models.SiteOperationStaffVehicle, { foreignKey :'vehicleId' });
     }
   }
   Vehicle.init({
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    image: DataTypes.STRING,
+    status:DataTypes.STRING,
+    inspectionExpiry:DataTypes.DATE,
+    insuranceExpiry:DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'Vehicle',

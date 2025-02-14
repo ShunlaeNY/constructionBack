@@ -18,21 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   UserTypes.init({
     name: DataTypes.STRING,
-    color: {
-      // type: DataTypes.STRING,
-      type: DataTypes.ENUM(
-        'red',
-        'blue',
-        'green',
-        'orange',
-        'lightblue',
-        'lightgreen',
-        'gray',
-        'whitesmoke'
-      ),
-      allowNull: false,
-    },
-  }, {
+    }, {
     sequelize,
     modelName: 'UserTypes',
     timestamps: true, // for createdAt and updatedAt
