@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Operationtype extends Model {
     /**
@@ -11,20 +9,37 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.hasOne(models.SiteOperationtype, { foreignKey: 'operationtypesId' })
-      
+      this.hasOne(models.SiteOperationtype, { foreignKey: "operationtypesId" });
     }
   }
-  Operationtype.init({
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+  Operationtype.init(
+    {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      name: DataTypes.STRING,
+
+      color: {
+        // type: DataTypes.STRING,
+        type: DataTypes.ENUM(
+          "red",
+          "blue",
+          "green",
+          "orange",
+          "lightblue",
+          "lightgreen",
+          "gray",
+          "whitesmoke"
+        ),
+        allowNull: false,
+      },
     },
-    name: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'Operationtype',
-  });
+    {
+      sequelize,
+      modelName: "Operationtype",
+    }
+  );
   return Operationtype;
 };
