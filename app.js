@@ -19,6 +19,7 @@ const vehicleRoutes = require("./routes/vehicle");
 //joining tables
 // ****************************
 const siteoperationtypeRoutes = require("./routes/siteoperationtype");
+const siteoperationstaffvehicleRoutes = require("./routes/siteoperationstaffvehicle");
 
 
 
@@ -37,6 +38,7 @@ app.use("/businesspartner",businesspartnerRoutes);
 app.use("/site",siteRoutes);
 app.use("/vehicle",vehicleRoutes);
 app.use("/siteoperation",siteoperationtypeRoutes);
+app.use("/siteoperationstaffvehicle",siteoperationstaffvehicleRoutes);
 
 app.listen(port,() => {
     console.log("Listening on port " + port);

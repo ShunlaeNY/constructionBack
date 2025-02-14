@@ -60,7 +60,17 @@ const getById = async (req, res) => {
 const getByOperaiontypeId = async (req, res) => {
     await db
       .findAll({
-        where: { operationtypeId: req.params.id },
+        where: { operationtypesId: req.params.id },
+        include: [
+          {
+            model: siteDB,
+            attributes: ["name"],
+          },
+          {
+            model: operationtypeDB,
+            attributes: ["name"],
+          }
+        ],
       })
       .then((datas) => {
         if (datas.length > 0) {

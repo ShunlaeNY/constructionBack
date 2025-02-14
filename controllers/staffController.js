@@ -1,7 +1,7 @@
 const {Sequelize} = require('sequelize');
 const db = require("../models").Staff;
 const teamDB = require('../models').Team;
-const usertypesDB = require('../models').Usertypes;
+const usertypesDB = require('../models').UserTypes;
 
 const getAll = async (req, res) => {
     await db
@@ -84,7 +84,17 @@ const getByUsertypesId = async (req, res) => {
 const getByTeamId = async (req, res) => {
     await db
       .findAll({
-        where: { teamId: req.params.id }
+        where: { teamId: req.params.id },
+        include: [
+          {
+            model: usertypesDB,
+            attributes: ["name"],
+          },
+          {
+            model: teamDB,
+            attributes: ["name"],
+          }
+        ],
       })
       .then((datas) => {
         if (datas.length > 0) {

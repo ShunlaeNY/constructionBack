@@ -67,7 +67,76 @@ const getById = async (req, res) => {
 const getBySiteoperationtypesId = async (req, res) => {
     await db
       .findAll({
-        where: { operationtypeId: req.params.id },
+        where: { siteoperationtypesId: req.params.id },
+        include: [
+            {
+              model: staffDB,
+              attributes: ["name"],
+            },
+            {
+              model: vehicleDB,
+              attributes: ["name"],
+            },
+            {
+              model: siteoperationDB 
+            }
+          ],
+      })
+      .then((datas) => {
+        if (datas.length > 0) {
+          res.status(200).json(datas);
+        } else {
+          res.status(404).json("Data not found in this!");
+        }
+      })
+      .catch((err) => res.status(500).json("Error: " + err.message));
+};
+
+const getBystaffId = async (req, res) => {
+    await db
+      .findAll({
+        where: { staffId: req.params.id },
+        include: [
+            {
+              model: staffDB,
+              attributes: ["name"],
+            },
+            {
+              model: vehicleDB,
+              attributes: ["name"],
+            },
+            {
+              model: siteoperationDB 
+            }
+          ],
+      })
+      .then((datas) => {
+        if (datas.length > 0) {
+          res.status(200).json(datas);
+        } else {
+          res.status(404).json("Data not found in this!");
+        }
+      })
+      .catch((err) => res.status(500).json("Error: " + err.message));
+};
+
+const getByvehicleId = async (req, res) => {
+    await db
+      .findAll({
+        where: { vehicleId: req.params.id },
+        include: [
+            {
+              model: staffDB,
+              attributes: ["name"],
+            },
+            {
+              model: vehicleDB,
+              attributes: ["name"],
+            },
+            {
+              model: siteoperationDB 
+            }
+          ],
       })
       .then((datas) => {
         if (datas.length > 0) {
@@ -132,4 +201,4 @@ const addNew = async (req, res) => {
       });
   };
 
-module.exports = { getAll, getById, getBySiteoperationtypesId, addNew, editData, deleteData };
+module.exports = { getAll, getById, getBySiteoperationtypesId, getBystaffId, getByvehicleId, addNew, editData, deleteData };
