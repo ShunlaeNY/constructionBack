@@ -1,6 +1,6 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+const express = require("express");
+const bodyParser = require("body-parser");
+const cors = require("cors");
 const port = 8383;
 
 //base tables
@@ -21,25 +21,53 @@ const vehicleRoutes = require("./routes/vehicle");
 const siteoperationtypeRoutes = require("./routes/siteoperationtype");
 const siteoperationstaffvehicleRoutes = require("./routes/siteoperationstaffvehicle");
 
-
+const authRoutes = require("./routes/auth");
+const { authenticate, authorize } = require("./middleware/auth");
+const protectedRoutes = require("./routes/protected");
 
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
-// BaseRoutes
-app.use("/usertypes",usertypesRoutes);
-app.use("/team",teamRoutes);
-app.use("/group",groupRoutes);
-app.use("/operationtypes",operationtypesRoutes);
-app.use("/skill",skillRoutes);
-app.use("/staff",staffRoutes);
-app.use("/businesspartner",businesspartnerRoutes);
-app.use("/site",siteRoutes);
-app.use("/vehicle",vehicleRoutes);
-app.use("/siteoperation",siteoperationtypeRoutes);
-app.use("/siteoperationstaffvehicle",siteoperationstaffvehicleRoutes);
+//auth testing start
+app.use("/auth", authRoutes);
+// app.use("/api/protected", protectedRoutes);
 
-app.listen(port,() => {
-    console.log("Listening on port " + port);
-})
+//auth testing end
+
+// BaseRoutes
+app.use("/usertypes", authenticate, authorize(["admin"]), usertypesRoutes);
+app.use("/team", authenticate, authorize(["admin"]), teamRoutes);
+app.use("/group", authenticate, authorize(["admin"]), groupRoutes);
+app.use(
+  "/operationtypes",
+  authenticate,
+  authorize(["admin"]),
+  operationtypesRoutes
+);
+app.use("/skill", authenticate, authorize(["admin"]), skillRoutes);
+app.use("/staff", authenticate, authorize(["admin"]), staffRoutes);
+app.use(
+  "/businesspartner",
+  authenticate,
+  authorize(["admin"]),
+  businesspartnerRoutes
+);
+app.use("/site", authenticate, authorize(["admin"]), siteRoutes);
+app.use("/vehicle", authenticate, authorize(["admin"]), vehicleRoutes);
+app.use(
+  "/siteoperation",
+  authenticate,
+  authorize(["admin"]),
+  siteoperationtypeRoutes
+);
+app.use(
+  "/siteoperationstaffvehicle",
+  authenticate,
+  authorize(["admin"]),
+  siteoperationstaffvehicleRoutes
+);
+
+app.listen(port, () => {
+  console.log("Listening on port " + port);
+});

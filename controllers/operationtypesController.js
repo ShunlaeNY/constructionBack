@@ -50,22 +50,28 @@ const addNew = async (req, res) => {
       });
 };
   
-  const editData = async (req, res) => {
-    await db
-      .findOne({ where: { id: req.params.id } })
-      .then((data) => {
-        if (data != null) {
-          db.update(req.body, { where: { id: req.params.id } }).then((_) => {
-            res.status(200).json("Selected Data updated");
-          });
-        } else {
-          res.status(404).json("Data not found");
-        }
-      })
-      .catch((err) => {
-        res.status(500).json("Error : " + err);
-      });
-  };
+const editData = async (req, res) => {
+  try {
+    console.log(req.body.name)
+    const data = await db.findOne({ where: { id: req.params.id } });
+
+    if (data != null) {
+      // Update the data with the values from req.body
+      await db.update(req.body, { where: { id: req.params.id } });
+
+      // Retrieve the updated data
+      const updatedData = await db.findOne({ where: { id: req.params.id } });
+
+      // Return the updated data in the response
+      res.status(200).json(updatedData);
+    } else {
+      res.status(404).json({ message: "Data not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "Error: " + err.message });
+  }
+};
+
   
   const deleteData = async (req, res) => {
     await db
