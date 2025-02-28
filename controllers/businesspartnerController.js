@@ -115,4 +115,5 @@ const addNew = async (req, res) => {
       });
   };
 
+
 module.exports = { getAll, getById, getByStaffId, addNew, editData, deleteData };

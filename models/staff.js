@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: false
     },
-    image: DataTypes.STRING(255),
+    image: DataTypes.TEXT("long"),
     email: {
       type: DataTypes.STRING(255),
       unique: true

@@ -16,8 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   Vehicle.init(
     {
-      name: DataTypes.STRING(255),
-      image: DataTypes.STRING(255),
+      name: DataTypes.STRING,
+      image: DataTypes.TEXT("long"),
       status: DataTypes.STRING(100),
       inspectionExpiry: DataTypes.DATE,
       insuranceExpiry: DataTypes.DATE,
