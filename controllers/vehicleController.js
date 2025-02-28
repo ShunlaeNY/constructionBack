@@ -115,4 +115,28 @@ const addNew = async (req, res) => {
       });
   };
 
-module.exports = { getAll, getById, getByGroupId, addNew, editData, deleteData };
+  const updateOrder = async (req, res) => {
+    const {items} = req.query;
+    if (!Array.isArray(items)){
+      return res.status(400).json({message: "Invalid data"})
+    }
+
+    const connection = await db.promise();
+    try{
+      await connection.beginTransaction();
+
+      for (let i = 0; i < items.length; i++) {
+        const {id} = items[i];
+        await connection.query("UPDATE vehicle SET position = ? WHERE id = ?", [i,id])
+      }
+      
+      await connection.commit();
+      res.status(200).json({message: "Vehicles updated successfully"})
+    }
+    catch(err){
+      await connection.rollback();
+      res.status(500).json({message: "Error while updating vehicles", error: err.message})
+    }
+  }
+
+module.exports = { getAll, getById, getByGroupId, addNew, editData, deleteData,updateOrder };

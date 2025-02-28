@@ -9,4 +9,5 @@ router.post("/add", vehicleController.addNew);
 router.put("/edit/:id", vehicleController.editData);
 router.delete("/delete/:id", vehicleController.deleteData);
 
+
 module.exports = router;
