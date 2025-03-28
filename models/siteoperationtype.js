@@ -20,7 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     requiredStaff: DataTypes.INTEGER,
     requiredVehicle: DataTypes.INTEGER,
     workinghourStart: DataTypes.INTEGER,
-    workinghourEnd: DataTypes.INTEGER
+    workinghourEnd: DataTypes.INTEGER,
+    startDate: DataTypes.DATE,
+    endDate: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'SiteOperationtype',
