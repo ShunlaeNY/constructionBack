@@ -108,23 +108,25 @@ const getBySiteId = async (req, res) => {
 };
 
 const addNew = async (req, res) => {
-    await db
-      .findOne({ where: { siteId === req.body.siteId && operationtypesId === req.body.operationtypesId } })
-      .then((data) => {
-        if (data != null) {
-          return res.status(400).json("Site Operation already exist.");
-        } else {
-          // console.log(req.body);
-          return db.create(req.body);
-        }
-      })
-      .then(() => {
-        res.status(201).json("Site Operation created Successfully.");
-      })
-      .catch((err) => {
-        return res.status(400).json(err.message);
+  try {
+      const existingData = await db.findOne({ 
+          where: { 
+              siteId: req.body.siteId, 
+              operationtypesId: req.body.operationtypesId 
+          } 
       });
+
+      if (existingData) {
+          return res.status(400).json("Site Operation already exists.");
+      }
+
+      await db.create(req.body);
+      return res.status(201).json("Site Operation created Successfully.");
+  } catch (err) {
+      return res.status(400).json(err.message);
+  }
 };
+
   
   const editData = async (req, res) => {
     await db
