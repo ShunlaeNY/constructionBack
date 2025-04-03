@@ -82,9 +82,34 @@ const getByOperaiontypeId = async (req, res) => {
       .catch((err) => res.status(500).json("Error: " + err.message));
 };
 
+const getBySiteId = async (req, res) => {
+  await db
+    .findAll({
+      where: { siteId: req.params.id },
+      include: [
+        {
+          model: siteDB,
+          attributes: ["name"],
+        },
+        {
+          model: operationtypeDB,
+          attributes: ["name"],
+        }
+      ],
+    })
+    .then((datas) => {
+      if (datas.length > 0) {
+        res.status(200).json(datas);
+      } else {
+        res.status(404).json("Partners not found in this Staff!");
+      }
+    })
+    .catch((err) => res.status(500).json("Error: " + err.message));
+};
+
 const addNew = async (req, res) => {
     await db
-      .findOne({ where: { id: req.body.id } })
+      .findOne({ where: { siteId === req.body.siteId && operationtypesId === req.body.operationtypesId } })
       .then((data) => {
         if (data != null) {
           return res.status(400).json("Site Operation already exist.");
@@ -135,4 +160,4 @@ const addNew = async (req, res) => {
       });
   };
 
-module.exports = { getAll, getById, getByOperaiontypeId, addNew, editData, deleteData };
+module.exports = { getAll, getById, getByOperaiontypeId, getBySiteId, addNew, editData, deleteData };
