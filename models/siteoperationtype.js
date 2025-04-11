@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class SiteOperationtype extends Model {
     /**
@@ -11,19 +9,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsTo(models.Site, { foreignKey:'siteId' });
-      this.belongsTo(models.Operationtype, { foreignKey: 'operationtypesId' });
-      this.hasOne(models.SiteOperationStaffVehicle, { foreignKey :'siteoperationtypesId' });
+      this.belongsTo(models.Site, { foreignKey: "siteId" });
+      this.belongsTo(models.Operationtype, { foreignKey: "operationtypesId" });
+      this.hasOne(models.SiteOperationStaffVehicle, {
+        foreignKey: "siteoperationtypesId",
+      });
     }
   }
-  SiteOperationtype.init({
-    requiredStaff: DataTypes.INTEGER,
-    requiredVehicle: DataTypes.INTEGER,
-    workinghourStart: DataTypes.INTEGER,
-    workinghourEnd: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'SiteOperationtype',
-  });
+  SiteOperationtype.init(
+    {
+      startDate: DataTypes.DATE,
+      endDate: DataTypes.DATE,
+      requiredStaff: DataTypes.INTEGER,
+      requiredVehicle: DataTypes.INTEGER,
+      workinghourStart: DataTypes.INTEGER,
+      workinghourEnd: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: "SiteOperationtype",
+    }
+  );
   return SiteOperationtype;
 };
