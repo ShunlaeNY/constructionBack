@@ -16,19 +16,16 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-  SiteOperationtype.init(
-    {
-      startDate: DataTypes.DATE,
-      endDate: DataTypes.DATE,
-      requiredStaff: DataTypes.INTEGER,
-      requiredVehicle: DataTypes.INTEGER,
-      workinghourStart: DataTypes.INTEGER,
-      workinghourEnd: DataTypes.INTEGER,
-    },
-    {
-      sequelize,
-      modelName: "SiteOperationtype",
-    }
-  );
+  SiteOperationtype.init({
+    requiredStaff: DataTypes.INTEGER,
+    requiredVehicle: DataTypes.INTEGER,
+    workinghourStart: DataTypes.INTEGER,
+    workinghourEnd: DataTypes.INTEGER,
+    startDate: DataTypes.DATE,
+    endDate: DataTypes.DATE,
+  }, {
+    sequelize,
+    modelName: 'SiteOperationtype',
+  });
   return SiteOperationtype;
 };
