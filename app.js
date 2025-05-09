@@ -21,50 +21,46 @@ const vehicleRoutes = require("./routes/vehicle");
 const siteoperationtypeRoutes = require("./routes/siteoperationtype");
 const siteoperationstaffvehicleRoutes = require("./routes/siteoperationstaffvehicle");
 
+// auth
 const authRoutes = require("./routes/auth");
-const { authenticate, authorize } = require("./middleware/auth");
-const protectedRoutes = require("./routes/protected");
+const validateTokens = require("./middleware/auth");
+const apiKeyValidator = require("./middleware/apikey");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 //auth testing start
-app.use("/auth", authRoutes);
-// app.use("/api/protected", protectedRoutes);
+app.use("/auth",apiKeyValidator, authRoutes);
 
 //auth testing end
 
 // BaseRoutes
-app.use("/usertypes", authenticate, authorize(["admin"]), usertypesRoutes);
-app.use("/team", authenticate, authorize(["admin"]), teamRoutes);
-app.use("/group", authenticate, authorize(["admin"]), groupRoutes);
+app.use("/usertypes", validateTokens, usertypesRoutes);
+app.use("/team", validateTokens, teamRoutes);
+app.use("/group", validateTokens, groupRoutes);
 app.use(
   "/operationtypes",
-  authenticate,
-  authorize(["admin"]),
+  validateTokens,
   operationtypesRoutes
 );
-app.use("/skill", authenticate, authorize(["admin"]), skillRoutes);
-app.use("/staff", authenticate, authorize(["admin"]), staffRoutes);
+app.use("/skill", validateTokens, skillRoutes);
+app.use("/staff", validateTokens, staffRoutes);
 app.use(
   "/businesspartner",
-  authenticate,
-  authorize(["admin"]),
+  validateTokens,
   businesspartnerRoutes
 );
-app.use("/site", authenticate, authorize(["admin"]), siteRoutes);
-app.use("/vehicle", authenticate, authorize(["admin"]), vehicleRoutes);
+app.use("/site", validateTokens, siteRoutes);
+app.use("/vehicle", validateTokens, vehicleRoutes);
 app.use(
   "/siteoperation",
-  authenticate,
-  authorize(["admin"]),
+  validateTokens,
   siteoperationtypeRoutes
 );
 app.use(
-  "/siteoperationstaffvehicle",
-  authenticate,
-  authorize(["admin"]),
+  "/all",
+  validateTokens,
   siteoperationstaffvehicleRoutes
 );
 

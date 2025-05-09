@@ -1,63 +1,61 @@
-// const jwt = require("jsonwebtoken");
-// const JWT_SECRET = process.env.JWT_SECRET || "secret";
+const userData = require("../models").Staff;
+const jwt = require('jsonwebtoken');
 
-// // Middleware to verify JWT token
-// const authenticate = (req, res, next) => {
-//   const authHeader = req.header("Authorization");
+const {generateAccessToken,generateRefreshToken} = require("../utils/tokengenerator");
 
-//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-//     return res.status(401).json({ message: "No token, authorization denied" });
-//   }
+const secretKey = "I am SHUN";
 
-//   const token = authHeader.split(" ")[1]; // Extract token
+const validateTokens = async (req,res,next) => {
+  const accessToken = req.headers["authorization"]?.split(" ")[1];
 
-//   try {
-//     const decoded = jwt.verify(token, JWT_SECRET);
-//     req.user = decoded; // Attach user info (id, role) to the request
-//     next();
-//   } catch (error) {
-//     res.status(401).json({ message: "Invalid token" });
-//   }
-// };
-
-// // Middleware to check if user has one of the allowed roles
-// const authorize = (roles) => (req, res, next) => {
-//   if (!roles.includes(req.user.role)) {
-//     return res.status(403).json({ message: "Access denied" });
-//   }
-//   next();
-// };
-
-// module.exports = { authenticate, authorize };
-
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET || "secret";
-
-// Middleware to verify JWT access token
-const authenticate = (req, res, next) => {
-  const authHeader = req.header("Authorization");
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "No token, authorization denied" });
+  if (!accessToken) {
+    return res.status(401).json({message: "Access Token is Required"})
   }
-
-  const token = authHeader.split(" ")[1]; // Extract token
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // Attach user info (id, role) to the request
+  try{
+    jwt.verify(accessToken,secretKey);
     next();
-  } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
-  }
-};
+  }catch(err){
+    if(err.name === "TokenExpiredError"){
+      const expireAccessToken = jwt.decode(accessToken);
+      await userData
+      .findByPk(expireAccessToken.id)
+      .then((user) => {
+        if(user != null){
+          try{
+            jwt.verify(user.refreshtoken,secretKey);
+            const userInfo = jwt.decode(user.refreshtoken);
 
-// Middleware to check if user has one of the allowed roles
-const authorize = (roles) => (req, res, next) => {
-  if (!roles.includes(req.user.role)) {
-    return res.status(403).json({ message: "Access denied" });
+            const newAccessToken = generateAccessToken(userInfo);
+            const newRefreshToken = generateRefreshToken(userInfo);
+            return userData
+            .update(
+              {
+                accesstoken:newAccessToken,
+                refreshtoken:newRefreshToken,
+              },
+              {where:{id:expireAccessToken.id}}
+            )
+            .then(() => {
+              next();
+            })
+          }catch(err){
+            if (err.name === "TokenExpiredError") {
+              return res.status(403).json("Refresh Token Expired")
+            } else {
+              return res.status(500).json("Invalid Refresh Token");
+            }
+          }
+        }else{
+          res.status(404).json("No User Found");
+        }
+      })
+      .catch((error) => {
+        res.status(500).json({message:"Fail to update Token"});
+      });
+    }else{
+      res.status(400).json("Invalid Token");
+    }
   }
-  next();
-};
+}
 
-module.exports = { authenticate, authorize };
+module.exports = validateTokens;

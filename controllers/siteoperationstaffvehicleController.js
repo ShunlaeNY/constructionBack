@@ -1,31 +1,53 @@
 const { Sequelize } = require("sequelize");
 const db = require("../models").SiteOperationStaffVehicle;
-const siteoperationDB = require("../models").SiteOperationtype;
-const vehicleDB = require("../models").Vehicle;
+const siteOperationDB = require("../models").SiteOperationtype;
 const staffDB = require("../models").Staff;
-const { Op } = require("sequelize");
+const vehicleDB = require("../models").Vehicle;
+
 const getAll = async (req, res) => {
   await db
     .findAll({
       include: [
         {
+          model: siteOperationDB,
+          include: [
+            {
+              model: require("../models").Site,
+              attributes: ["name", "address"],
+            },
+            {
+              model: require("../models").Operationtype,
+              attributes: ["name","color"],
+            },
+          ],
+        },
+        {
           model: staffDB,
-          attributes: ["name"],
+          attributes: ["id", "name", "image", "teamId", "email", "phoneNumber", "address", "dob","position"],
+          include: [
+            {
+              model: require("../models").Team,
+              attributes: ["name", "color"],
+            },
+          ],
         },
         {
-          model: vehicleDB,
-          attributes: ["name"],
-        },
-        {
-          model: siteoperationDB,
-        },
+          model:vehicleDB,
+          attributes:["id", "name", "image", "groupId"],
+          include: [
+            {
+              model: require("../models").Group,
+              attributes: ["name", "color"],
+            },
+          ],
+        }
       ],
     })
     .then((datas) => {
       if (datas.length > 0) {
         res.status(200).json(datas);
       } else {
-        res.status(404).json("No Site Operation Staff Vehicle Data.");
+        res.status(404).json("No Site Operation Staff Site Data.");
       }
     })
     .catch((error) => {
@@ -39,16 +61,38 @@ const getById = async (req, res) => {
       where: { id: req.params.id },
       include: [
         {
+          model: siteOperationDB,
+          include: [
+            {
+              model: require("../models").Site,
+              attributes: ["name", "address"],
+            },
+            {
+              model: require("../models").Operationtype,
+              attributes: ["name","color"],
+            },
+          ],
+        },
+        {
           model: staffDB,
-          attributes: ["name"],
+          attributes: ["id", "name", "image", "teamId", "email", "phoneNumber", "address", "dob","position"],
+          include: [
+            {
+              model: require("../models").Team,
+              attributes: ["name", "color"],
+            },
+          ],
         },
         {
-          model: vehicleDB,
-          attributes: ["name"],
-        },
-        {
-          model: siteoperationDB,
-        },
+          model:vehicleDB,
+          attributes:["id", "name", "image", "groupId"],
+          include: [
+            {
+              model: require("../models").Group,
+              attributes: ["name", "color"],
+            },
+          ],
+        }
       ],
     })
     .then((data) => {
@@ -63,222 +107,202 @@ const getById = async (req, res) => {
     });
 };
 
-const getStaffBySiteoperationtypesId = async (req, res) => {
+const getBySiteOperaiontypeId = async (req, res) => {
   await db
     .findAll({
-      where: {
-        siteoperationtypesId: req.params.id,
-        staffId: { [Op.ne]: null }, // ✅ vehicleId IS NOT NULL
-      },
+      where: { siteoperationtypesId: req.params.id },
       include: [
+        {
+          model: siteOperationDB,
+          include: [
+            {
+              model: require("../models").Site,
+              attributes: ["name", "address"],
+            },
+            {
+              model: require("../models").Operationtype,
+              attributes: ["name","color"],
+            },
+          ],
+        },
         {
           model: staffDB,
-          attributes: ["id", "name", "image", "teamId", "position"],
+          attributes: ["id", "name", "image", "teamId", "email", "phoneNumber", "address", "dob","position"],
+          include: [
+            {
+              model: require("../models").Team,
+              attributes: ["name", "color"],
+            },
+          ],
         },
-      ],
-    })
-    .then((datas) => {
-      if (datas.length > 0) {
-        res.status(200).json(datas);
-      } else {
-        res.status(404).json("No vehicle-linked data found.");
-      }
-    })
-    .catch((err) => res.status(500).json("Error: " + err.message));
-};
-const getVehicleBySiteoperationtypesId = async (req, res) => {
-  await db
-    .findAll({
-      where: {
-        siteoperationtypesId: req.params.id,
-        vehicleId: { [Op.ne]: null }, // ✅ vehicleId IS NOT NULL
-      },
-      include: [
         {
-          model: vehicleDB,
-          attributes: ["id", "name", "image", "groupId", "status"],
-        },
+          model:vehicleDB,
+          attributes:["id", "name", "image", "groupId"],
+          include: [
+            {
+              model: require("../models").Group,
+              attributes: ["name", "color"],
+            },
+          ],
+        }
       ],
     })
     .then((datas) => {
       if (datas.length > 0) {
         res.status(200).json(datas);
       } else {
-        res.status(404).json("No vehicle-linked data found.");
+        res.status(404).json("Id not found!");
       }
     })
     .catch((err) => res.status(500).json("Error: " + err.message));
 };
 
-// const getBySiteoperationtypesId = async (req, res) => {
-//   await db
-//     .findAll({
-//       where: { siteoperationtypesId: req.params.id },
-//       include: [
-//         {
-//           model: staffDB,
-//           attributes: ["id", "name", "image", "teamId", "position"],
-//         },
-//         {
-//           model: vehicleDB,
-//           attributes: ["id", "name", "image", "groupId", "status"],
-//         },
-//         {
-//           model: siteoperationDB,
-//         },
-//       ],
-//     })
-//     .then((datas) => {
-//       if (datas.length > 0) {
-//         res.status(200).json(datas);
-//       } else {
-//         res.status(404).json("Data not found in this!");
-//       }
-//     })
-//     .catch((err) => res.status(500).json("Error: " + err.message));
+const getByStaffId = async (req, res) => {
+  await db
+    .findAll({
+      where: { staffId: req.params.id }, 
+      include: [
+        {
+          model: siteOperationDB,
+          include: [
+            {
+              model: require("../models").Site,
+              attributes: ["name", "address"],
+            },
+            {
+              model: require("../models").Operationtype,
+              attributes: ["name","color"],
+            },
+          ],
+        },
+        {
+          model: staffDB,
+          attributes: ["id", "name", "image", "teamId", "email", "phoneNumber", "address", "dob","position"],
+          include: [
+            {
+              model: require("../models").Team,
+              attributes: ["name", "color"],
+            },
+          ],
+        },
+        {
+          model:vehicleDB,
+          attributes:["id", "name", "image", "groupId"],
+          include: [
+            {
+              model: require("../models").Group,
+              attributes: ["name", "color"],
+            },
+          ],
+        }
+      ],
+    })
+    .then((datas) => {
+      if (datas.length > 0) {
+        res.status(200).json(datas);
+      } else {
+        res.status(404).json("Id not found!");
+      }
+    })
+    .catch((err) => res.status(500).json("Error: " + err.message));
+};
+
+const getByVehicleId = async (req, res) => {
+  await db
+    .findAll({
+      where: { vehicleId: req.params.id }, 
+      include: [
+        {
+          model: siteOperationDB,
+          include: [
+            {
+              model: require("../models").Site,
+              attributes: ["name", "address"],
+            },
+            {
+              model: require("../models").Operationtype,
+              attributes: ["name","color"],
+            },
+          ],
+        },
+        {
+          model: staffDB,
+          attributes: ["id", "name", "image", "teamId", "email", "phoneNumber", "address", "dob","position"],
+          include: [
+            {
+              model: require("../models").Team,
+              attributes: ["name", "color"],
+            },
+          ],
+        },
+        {
+          model:vehicleDB,
+          attributes:["id", "name", "image", "groupId"],
+          include: [
+            {
+              model: require("../models").Group,
+              attributes: ["name", "color"],
+            },
+          ],
+        }
+      ],
+    })
+    .then((datas) => {
+      if (datas.length > 0) {
+        res.status(200).json(datas);
+      } else {
+        res.status(404).json("Id not found!");
+      }
+    })
+    .catch((err) => res.status(500).json("Error: " + err.message));
+};
+
+// const addNew = async (req, res) => {
+//   try {
+//     const existingData = await db.findOne({
+//       where: {
+//         siteoperationtypesId:req.body.siteoperationtypesId,
+//         staffId: req.body.staffId,
+//         vehicleId: req.body.vehicleId,
+//       },
+//     });
+
+//     if (existingData) {
+//       return res.status(400).json({ error: "Site Operation Staff Vehicle already exists." });
+//     }
+
+//     // Create the new site operation record
+//     const newData = await db.create(req.body);
+//     return res
+//       .status(201)
+//       .json({ message: "Site Operation created successfully.", data: newData });
+//   } catch (err) {
+//     return res.status(400).json({ error: err.message });
+//   }
 // };
-
-const getBystaffId = async (req, res) => {
-  await db
-    .findAll({
-      where: { staffId: req.params.id },
-      include: [
-        {
-          model: staffDB,
-          attributes: ["name"],
-        },
-        {
-          model: vehicleDB,
-          attributes: ["name"],
-        },
-        {
-          model: siteoperationDB,
-        },
-      ],
-    })
-    .then((datas) => {
-      if (datas.length > 0) {
-        res.status(200).json(datas);
-      } else {
-        res.status(404).json("Data not found in this!");
-      }
-    })
-    .catch((err) => res.status(500).json("Error: " + err.message));
-};
-
-const getByvehicleId = async (req, res) => {
-  await db
-    .findAll({
-      where: { vehicleId: req.params.id },
-      include: [
-        {
-          model: staffDB,
-          attributes: ["name"],
-        },
-        {
-          model: vehicleDB,
-          attributes: ["name"],
-        },
-        {
-          model: siteoperationDB,
-        },
-      ],
-    })
-    .then((datas) => {
-      if (datas.length > 0) {
-        res.status(200).json(datas);
-      } else {
-        res.status(404).json("Data not found in this!");
-      }
-    })
-    .catch((err) => res.status(500).json("Error: " + err.message));
-};
 
 const addNew = async (req, res) => {
   try {
-    const { siteoperationtypesId, selectedStaff } = req.body;
-
-    // ✅ Step 1: Delete records where siteoperationtypesId matches and staffId exists in the DB
-    await db.destroy({
+    const [data, created] = await db.findOrCreate({
       where: {
-        siteoperationtypesId: siteoperationtypesId,
-        staffId: {
-          [Op.in]: Sequelize.literal(
-            `(SELECT staffId FROM SiteOperationStaffVehicles WHERE staffId IS NOT NULL)`
-          ),
-        },
+        siteoperationtypesId: req.body.siteoperationtypesId,
+        staffId: req.body.staffId,
+        vehicleId: req.body.vehicleId,
       },
+      defaults: req.body 
     });
-
-    // ✅ Step 2: If selectedStaff is empty, return early
-    if (!selectedStaff || selectedStaff.length === 0) {
-      return res.status(200).json({
-        message: "No new staff to add. Data deletion completed.",
+    return res
+      .status(created ? 201 : 200)
+      .json({ 
+        message: created ? "Site Operation created successfully." : "Site Operation already exists.",
+        data: data,
+        created: created
       });
-    }
-
-    const newEntries = await db.bulkCreate(
-      selectedStaff.map((staff) => ({
-        ...staff,
-        siteoperationtypesId,
-      }))
-    );
-
-    return res.status(201).json({
-      message: "Data updated successfully.",
-      data: newEntries,
-    });
   } catch (err) {
-    console.error("Error in addNew:", err);
-    return res.status(500).json({
-      error: err.message,
-      stack: err.stack,
-    });
+    return res.status(400).json({ error: err.message });
   }
 };
 
-const addNewVehicle = async (req, res) => {
-  try {
-    const { siteoperationtypesId, selectedVehicle } = req.body;
-
-    // ✅ Step 1: Delete records where siteoperationtypesId matches and staffId exists in the DB
-    await db.destroy({
-      where: {
-        siteoperationtypesId: siteoperationtypesId,
-        vehicleId: {
-          [Op.in]: Sequelize.literal(
-            `(SELECT vehicleId FROM SiteOperationStaffVehicles WHERE vehicleId IS NOT NULL)`
-          ),
-        },
-      },
-    });
-
-    // ✅ Step 2: If selectedVehicle is empty, return early
-    if (!selectedVehicle || selectedVehicle.length === 0) {
-      return res.status(200).json({
-        message: "No new vehicle to add. Data deletion completed.",
-      });
-    }
-
-    const newEntries = await db.bulkCreate(
-      selectedVehicle.map((vehicle) => ({
-        ...vehicle,
-        siteoperationtypesId,
-      }))
-    );
-
-    return res.status(201).json({
-      message: "Data updated successfully.",
-      data: newEntries,
-    });
-  } catch (err) {
-    console.error("Error in addNew:", err);
-    return res.status(500).json({
-      error: err.message,
-      stack: err.stack,
-    });
-  }
-};
 
 const editData = async (req, res) => {
   await db
@@ -297,36 +321,47 @@ const editData = async (req, res) => {
     });
 };
 
+// const deleteData = async (req, res) => {
+//   await db
+//     .findByPk(req.params.id)
+//     .then((data) => {
+//       if (data != null) {
+//         data.destroy({ where: { id: req.params.id } }).then((_) => {
+//           res.status(200).json("Selected Data deleted");
+//         });
+//       } else {
+//         res.status(404).json("Selected Data not found");
+//       }
+//     })
+//     .catch((err) => {
+//       res.status(500).json("Error : " + err);
+//     });
+// };
 const deleteData = async (req, res) => {
-  await db
-    .findByPk(req.params.id)
-    .then((data) => {
-      if (data != null) {
-        data.destroy({ where: { id: req.params.id } }).then((_) => {
-          res.status(200).json("Selected Data deleted");
-        });
-      } else {
-        res.status(404).json("Selected Data not found");
-      }
-    })
-    .catch((err) => {
-      res.status(500).json("Error : " + err);
-    });
+  try {
+    const data = await db.findByPk(req.params.id);
+    
+    if (!data) {
+      return res.status(404).json("Selected Data not found");
+    }
+  
+    await data.destroy();
+    return res.status(200).json("Selected Data deleted");
+  } catch (err) {
+    return res.status(500).json("Error : " + err);
+  }
 };
+
+
 
 module.exports = {
   getAll,
   getById,
-  // getBySiteoperationtypesId,
-  getBystaffId,
-  getByvehicleId,
+  getBySiteOperaiontypeId,
+  getByStaffId,
+  getByVehicleId,
   addNew,
-
   editData,
   deleteData,
 
-  getStaffBySiteoperationtypesId,
-  getVehicleBySiteoperationtypesId,
-
-  addNewVehicle,
 };

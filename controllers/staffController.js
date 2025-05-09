@@ -136,40 +136,47 @@ const addNew = async (req, res) => {
   }
 };
 
-// const addNew = async (req, res) => {
-//     await db
-//       .findOne({ where: { name: req.body.name } })
-//       .then((data) => {
-//         if (data != null) {
-//           return res.status(400).json("Team already exist.");
-//         } else {
-//           // console.log(req.body);
-//           return db.create(req.body);
-//         }
-//       })
-//       .then(() => {
-//         res.status(201).json("Team created Successfully.");
-//       })
-//       .catch((err) => {
-//         return res.status(400).json(err.message);
-//       });
+// const editData = async (req, res) => {
+//   await db
+//     .findOne({ where: { id: req.params.id } })
+//     .then((data) => {
+//       if (data != null) {
+//         db.update(req.body, { where: { id: req.params.id } }).then((_) => {
+//           res.status(200).json("Selected Data updated");
+//         });
+//       } else {
+//         res.status(404).json("Data not found");
+//       }
+//     })
+//     .catch((err) => {
+//       res.status(500).json("Error : " + err);
+//     });
 // };
 
 const editData = async (req, res) => {
-  await db
-    .findOne({ where: { id: req.params.id } })
-    .then((data) => {
-      if (data != null) {
-        db.update(req.body, { where: { id: req.params.id } }).then((_) => {
-          res.status(200).json("Selected Data updated");
-        });
-      } else {
-        res.status(404).json("Data not found");
-      }
-    })
-    .catch((err) => {
-      res.status(500).json("Error : " + err);
-    });
+  try {
+    const user = await db.findOne({ where: { id: req.params.id } });
+
+    if (!user) {
+      return res.status(404).json("Data not found");
+    }
+
+    const updateFields = { ...req.body };
+
+    if (req.body.password && req.body.password.trim() !== '') {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+      updateFields.password = hashedPassword;
+    } else {
+      delete updateFields.password;
+    }
+
+    await db.update(updateFields, { where: { id: req.params.id } });
+
+    res.status(200).json("Selected Data updated");
+  } catch (err) {
+    res.status(500).json("Error : " + err);
+  }
 };
 
 const deleteData = async (req, res) => {

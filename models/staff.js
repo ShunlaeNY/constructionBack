@@ -41,7 +41,9 @@ module.exports = (sequelize, DataTypes) => {
     workingStatus: DataTypes.STRING(100),
     position: DataTypes.STRING(100),
     dob: DataTypes.DATE,
-    joinedDate: DataTypes.DATE
+    joinedDate: DataTypes.DATE,
+    accesstoken:DataTypes.STRING,
+    refreshtoken:DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Staff',

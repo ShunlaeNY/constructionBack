@@ -191,7 +191,7 @@ module.exports = {
   getById,
   getByOperaiontypeId,
   getBySiteId,
-  getBySiteId, addNew,
+  addNew,
   editData,
   deleteData,
 };
